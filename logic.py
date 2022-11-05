@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from sql_interface import DbChinook
 
 
 class Search_engine():
@@ -6,8 +7,7 @@ class Search_engine():
         self.db = db
 
     def select_all_tracks(self):
-        """
-        Вибрати всі записи про треки та вивести їх
+        """Вибрати всі записи про треки та вивести їх
         """
         res = self.db.select("""
                 SELECT * FROM tracks;
@@ -15,9 +15,7 @@ class Search_engine():
         print(res)
 
 
-if __name__ == '__main__':
-   from sql_interface import DbChinook
-   
+if __name__ == '__main__':   
    db = DbChinook()
    engine = Search_engine(db)
    engine.select_all_tracks()
