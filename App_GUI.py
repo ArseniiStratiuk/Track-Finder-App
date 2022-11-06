@@ -12,7 +12,7 @@ ctk.set_appearance_mode("Dark")  # Modes: "System" (standard), "Dark", "Light"
 class Window(ctk.CTk):
 
     WIDTH = 1248
-    HEIGHT = 732
+    HEIGHT = 720
     
     LARGE_FONT = ("Comic Sans MS", 24)
     MEDIUM_FONT = ("Comic Sans MS", 16)
@@ -20,6 +20,8 @@ class Window(ctk.CTk):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        self.resizable(False, False)
 
         self.db = DbChinook()
         self.search_engine = Search_engine(self.db)
@@ -86,7 +88,7 @@ class Window(ctk.CTk):
                                   selectmode="single", bd=2, 
                                   highlightthickness=0, 
                                   font=self.MEDIUM_FONT, 
-                                  relief="groove", height=19, width=36
+                                  relief="groove", height=16, width=36
         )
         self.listbox.grid(row=0, column=0, sticky="nswe")
         
@@ -104,7 +106,69 @@ class Window(ctk.CTk):
                                xscrollcommand=self.listbox_scroll_x.set
         )
         # ------------------------
-        
+
+        self.search_button = ctk.CTkButton(self, text="Search", 
+                                           text_font=self.MEDIUM_FONT,
+                                           command=self.search_track
+        )
+        self.search_button.grid(row=2, column=4, rowspan=2, 
+                                pady=(0, 20), padx=20, sticky="we"
+        )
+
+        # Radiobuttons
+        self.radio_var = tk.IntVar(value=0)
+
+        self.label_radio_group = ctk.CTkLabel(self, text="Шукати...", text_font=self.SMALL_FONT)
+        self.label_radio_group.grid(row=0, column=6, pady=20, padx=(40, 20), sticky="w")
+
+        self.radio_button_1 = ctk.CTkRadioButton(self, variable=self.radio_var,
+                                                 value=0, text="За назвою", text_font=self.SMALL_FONT
+        )
+        self.radio_button_1.grid(row=1, column=6, pady=(0, 20), padx=(40, 20), sticky="w")
+
+        self.radio_button_2 = ctk.CTkRadioButton(self, variable=self.radio_var,
+                                                 value=1, text="За автором", text_font=self.SMALL_FONT
+        )
+        self.radio_button_2.grid(row=2, column=6, pady=(0, 20), padx=(40, 20), sticky="w")
+
+        self.radio_button_3 = ctk.CTkRadioButton(self, variable=self.radio_var,
+                                                 value=2, text="За жанром", text_font=self.SMALL_FONT
+        )
+        self.radio_button_3.grid(row=3, column=6, pady=(0, 20), padx=(40, 20), sticky="w")
+        # ------------------------
+
+        # Frame with labels
+        self.frame_labels = ctk.CTkFrame(self, width=480, height=480)
+        self.frame_labels.grid(row=4, column=4, columnspan=3, 
+                               rowspan=8, pady=(0, 20), padx=20, sticky="nswe"
+        )
+        self.frame_labels.pack_propagate(0)
+
+        self.name = tk.StringVar(value="Назва обраної пісні")
+        self.label_2 = ctk.CTkLabel(self.frame_labels, text=self.name.get(), 
+                                    text_font=self.LARGE_FONT, anchor="center")
+        self.label_2.pack(padx=10, pady=20)
+
+        self.author = tk.StringVar(value="Автор")
+        self.label_3 = ctk.CTkLabel(self.frame_labels, text=self.author.get(), 
+                                    text_font=self.LARGE_FONT, anchor="center", 
+                                    bg_color="gray", corner_radius=8, width=400, 
+                                    height=70)
+        self.label_3.pack(padx=10, pady=(40, 0))
+
+        self.name_album = tk.StringVar(value="Назва альбому")
+        self.label_4 = ctk.CTkLabel(self.frame_labels, textvariable=self.name_album, 
+                                    text_font=self.LARGE_FONT, anchor="center", 
+                                    bg_color="gray", corner_radius=8, width=400, 
+                                    height=70)
+        self.label_4.pack(padx=10, pady=(40, 0))
+
+        self.duration = tk.StringVar(value="Тривалість")
+        self.label_5 = ctk.CTkLabel(self.frame_labels, text=self.duration.get(), 
+                                    text_font=self.LARGE_FONT, anchor="center", 
+                                    bg_color="gray", width=400, corner_radius=8, 
+                                    height=70)
+        self.label_5.pack(padx=10, pady=(40, 0))
 
     def search_track(self):
         """Пошук треків за назвою треку, або за автором
