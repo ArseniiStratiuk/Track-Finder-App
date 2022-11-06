@@ -103,6 +103,8 @@ class Window(ctk.CTk):
         self.listbox.configure(yscrollcommand=self.listbox_scroll_y.set, 
                                xscrollcommand=self.listbox_scroll_x.set
         )
+        # ------------------------
+        
 
     def search_track(self):
         """Пошук треків за назвою треку, або за автором
