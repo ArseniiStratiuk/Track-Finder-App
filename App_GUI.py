@@ -36,7 +36,7 @@ class Window(ctk.CTk):
         self.protocol(
             "WM_DELETE_WINDOW", self.on_closing
         )  # Call .on_closing() when app gets closed
-
+        
         self.create_widgets()
 
     def create_widgets(self):
@@ -46,22 +46,20 @@ class Window(ctk.CTk):
         self.frame_left = ctk.CTkFrame(self, width=180, height=832, corner_radius=0)
         self.frame_left.grid(row=0, column=0, rowspan=12, sticky="nswe")
         
-        self.frame_left.grid_rowconfigure((1, 2, 3, 4, 5, 6, 7, 8, 11), minsize=10)
-        
         self.label_1 = ctk.CTkLabel(self.frame_left, text="Track\nFinder\nApp",
                                     text_font=self.LARGE_FONT)
-        self.label_1.grid(row=0, column=0, pady=20, padx=10)
+        self.label_1.pack(pady=60, padx=10)
+        
+        self.appearance_mode = ctk.CTkOptionMenu(self.frame_left, 
+                                              values=["Light", "Dark"],
+                                              command=self.change_appearance_mode)
+        self.appearance_mode.set("Dark")
+        self.appearance_mode.pack(pady=(0, 80), padx=20, side="bottom")
         
         self.label_mode = ctk.CTkLabel(self.frame_left, text="Appearance Mode:", 
                                        text_font=self.SMALL_FONT
         )
-        self.label_mode.grid(row=9, column=0, pady=10, padx=20, sticky="w")
-
-        self.appearance_mode = ctk.CTkOptionMenu(self.frame_left,
-                                              values=["Light", "Dark"],
-                                              command=self.change_appearance_mode)
-        self.appearance_mode.set("Dark")
-        self.appearance_mode.grid(row=10, column=0, pady=(0, 20), padx=20, sticky="w")
+        self.label_mode.pack(pady=20, padx=20, side="bottom")
         # ------------------------
         
         ctk.CTkLabel(self, text="Введіть пошуковий запит:", 
@@ -73,12 +71,12 @@ class Window(ctk.CTk):
         self.entry = ctk.CTkEntry(self, width=440, placeholder_text="Сюди", 
                                   text_font=self.MEDIUM_FONT
         )
-        self.entry.grid(row=2, column=1, columnspan=3, rowspan=2, 
+        self.entry.grid(row=1, column=1, columnspan=3, rowspan=3, 
                         pady=(0, 20), padx=20, sticky="we"
         )
         
         # Frame with listbox and scrollbars
-        self.frame_listbox = ctk.CTkFrame(self, width=440, height=500)
+        self.frame_listbox = ctk.CTkFrame(self, width=440, height=500, corner_radius=0)
         self.frame_listbox.grid(row=4, column=1, columnspan=3, 
                                 rowspan=8, pady=(0, 20), padx=20, sticky="nswe"
         )
@@ -97,10 +95,10 @@ class Window(ctk.CTk):
         )
         self.listbox_scroll_y.grid(row=0, column=1, sticky="ns")
         
-        self.listbox_scroll_x = ctk.CTkScrollbar(self.frame_listbox, height=17, 
+        self.listbox_scroll_x = ctk.CTkScrollbar(self.frame_listbox, height=16, 
                                                  command=self.listbox.xview
         )
-        self.listbox_scroll_x.grid(row=1, column=0, columnspan=2, sticky="we")
+        self.listbox_scroll_x.grid(row=1, column=0, sticky="we")
 
         self.listbox.configure(yscrollcommand=self.listbox_scroll_y.set, 
                                xscrollcommand=self.listbox_scroll_x.set
@@ -111,7 +109,7 @@ class Window(ctk.CTk):
                                            text_font=self.MEDIUM_FONT,
                                            command=self.search_track
         )
-        self.search_button.grid(row=2, column=4, rowspan=2, 
+        self.search_button.grid(row=1, column=4, rowspan=3, 
                                 pady=(0, 20), padx=20, sticky="we"
         )
 
@@ -145,29 +143,29 @@ class Window(ctk.CTk):
         self.frame_labels.pack_propagate(0)
 
         self.name = tk.StringVar(value="Назва обраної пісні")
-        self.label_2 = ctk.CTkLabel(self.frame_labels, text=self.name.get(), 
+        self.label_2 = ctk.CTkLabel(self.frame_labels, textvariable=self.name, 
                                     text_font=self.LARGE_FONT, anchor="center")
         self.label_2.pack(padx=10, pady=20)
 
         self.author = tk.StringVar(value="Автор")
-        self.label_3 = ctk.CTkLabel(self.frame_labels, text=self.author.get(), 
+        self.label_3 = ctk.CTkLabel(self.frame_labels, textvariable=self.author, 
                                     text_font=self.LARGE_FONT, anchor="center", 
-                                    bg_color="gray", corner_radius=8, width=400, 
+                                    corner_radius=17, width=400, fg_color=("white", "gray55"), 
                                     height=70)
         self.label_3.pack(padx=10, pady=(40, 0))
 
         self.name_album = tk.StringVar(value="Назва альбому")
         self.label_4 = ctk.CTkLabel(self.frame_labels, textvariable=self.name_album, 
                                     text_font=self.LARGE_FONT, anchor="center", 
-                                    bg_color="gray", corner_radius=8, width=400, 
+                                    corner_radius=17, width=400, fg_color=("white", "gray55"), 
                                     height=70)
         self.label_4.pack(padx=10, pady=(40, 0))
 
         self.duration = tk.StringVar(value="Тривалість")
-        self.label_5 = ctk.CTkLabel(self.frame_labels, text=self.duration.get(), 
+        self.label_5 = ctk.CTkLabel(self.frame_labels, textvariable=self.duration, 
                                     text_font=self.LARGE_FONT, anchor="center", 
-                                    bg_color="gray", width=400, corner_radius=8, 
-                                    height=70)
+                                    width=400, fg_color=("white", "gray55"), 
+                                    corner_radius=17, height=70)
         self.label_5.pack(padx=10, pady=(40, 0))
 
     def search_track(self):

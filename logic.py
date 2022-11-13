@@ -13,6 +13,9 @@ class Search_engine():
                 SELECT * FROM tracks;
         """)
         print(res)
+        
+    def search_track(self, search_text):
+        search_text = f"%{search_text}%"
 
 
 if __name__ == '__main__':   
