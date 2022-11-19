@@ -7,18 +7,58 @@ class Search_engine():
         self.db = db
 
     def select_all_tracks(self):
-        """Вибрати всі записи про треки та вивести їх
+        """
+        Select the names of all the tracks.
         """
         res = self.db.select("""
-                SELECT * FROM tracks;
+                SELECT Name FROM tracks;
         """)
-        print(res)
+        return res
+    
+    def select_data(self, track):
+        """
+        Select information about the chosen track: author(s) 
+        or artist(s), its genre, name of the album and its duration 
+        in milliseconds.
+        """
+        res = self.db.select("""
+                SELECT ar.Name, g.Name, al.Title, t.Milliseconds 
+                FROM tracks t INNER JOIN genres g USING (GenreId) 
+                INNER JOIN albums al USING (AlbumId) 
+                INNER JOIN artists ar USING (ArtistId) 
+                WHERE t.Name = ?;
+        """, track)
+        return res[0]
         
-    def search_track(self, search_text):
+    def search_by_name(self, search_text):
         search_text = f"%{search_text}%"
+        res = self.db.select("""
+                SELECT Name FROM tracks WHERE Name LIKE ?;
+        """, search_text)
+        return res
+        
+    def search_by_author(self, search_text):
+        search_text = f"%{search_text}%"
+        res = self.db.select("""
+                SELECT t.Name FROM tracks t 
+                INNER JOIN albums USING (AlbumId) 
+                INNER JOIN artists ar USING (ArtistId) 
+                WHERE ar.Name LIKE ?;
+        """, search_text)
+        return res
+        
+    def search_by_genre(self, search_text):
+        search_text = f"%{search_text}%"
+        res = self.db.select("""
+                SELECT t.Name FROM tracks t 
+                INNER JOIN genres g USING (GenreId) 
+                WHERE g.Name LIKE ?;
+        """, search_text)
+        return res
 
-
-if __name__ == '__main__':   
+if __name__ == '__main__':
    db = DbChinook()
    engine = Search_engine(db)
-   engine.select_all_tracks()
+#    print(engine.search_by_name('fast'))
+#    print(engine.search_by_author('ac/dc'))
+#    print(engine.search_by_genre('pop'))
