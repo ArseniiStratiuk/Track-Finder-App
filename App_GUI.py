@@ -87,7 +87,7 @@ class Window(ctk.CTk):
         
         self.listbox = tk.Listbox(self.frame_listbox, bg="#1f1f1f", fg="#ebebeb", 
                                   selectbackground="#11b384", cursor="hand2", 
-                                  selectmode="single", bd=2, activestyle="none", 
+                                  selectmode="browse", bd=2, activestyle="none", 
                                   highlightthickness=0, selectforeground="#ebebeb", 
                                   font=self.MEDIUM_FONT, 
                                   relief="groove", height=16, width=36)
@@ -259,10 +259,10 @@ class Window(ctk.CTk):
         characters with three dots.
         """
         font = tkFont.Font(family='Comic Sans MS', size=16)
-        self.label_author.configure(corner_radius=0)
+        # self.label_author.configure(corner_radius=0)
         max_width = self.label_author.winfo_width()
         actual_width = font.measure(text)
-        self.label_author.configure(corner_radius=10)
+        # self.label_author.configure(corner_radius=10)
         if actual_width <= max_width:
             # The original text fits; no need to add ellipsis.
             self.author.set(text)
@@ -280,10 +280,10 @@ class Window(ctk.CTk):
         characters with three dots.
         """
         font = tkFont.Font(family='Comic Sans MS', size=16)
-        self.label_album.configure(corner_radius=0)
+        # self.label_album.configure(corner_radius=0)
         max_width = self.label_album.winfo_width()
         actual_width = font.measure(text)
-        self.label_album.configure(corner_radius=10)
+        # self.label_album.configure(corner_radius=10)
         if actual_width <= max_width:
             # The original text fits; no need to add ellipsis.
             self.album.set(text)
