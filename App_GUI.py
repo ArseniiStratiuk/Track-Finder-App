@@ -1,7 +1,10 @@
 import tkinter as tk
 import tkinter.font as tkFont
+import os
+import sys
 
 import customtkinter as ctk
+from PIL import Image, ImageTk
 
 from sql_interface import DbChinook
 from logic import Search_engine
@@ -12,12 +15,12 @@ ctk.set_appearance_mode("Dark")  # Modes: "System" (standard), "Dark", "Light"
 
 class Window(ctk.CTk):
 
-    WIDTH = 1248
+    WIDTH = 1242
     HEIGHT = 720
     
-    LARGE_FONT = ("Comic Sans MS", 24)
-    MEDIUM_FONT = ("Comic Sans MS", 16)
-    SMALL_FONT = ("Comic Sans MS", 12)
+    LARGE_FONT = ("Calibri", 24, "bold")
+    MEDIUM_FONT = ("Calibri", 18, "bold")
+    SMALL_FONT = ("Calibri", 14, "bold")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -29,11 +32,19 @@ class Window(ctk.CTk):
 
         self.WINDOW_CENTERING_X = int(self.winfo_screenwidth()/2 - self.WIDTH/2)
         self.WINDOW_CENTERING_Y = int(self.winfo_screenheight()/2 - self.HEIGHT/2)
+        
+        self.SEARCH_DARK = ImageTk.PhotoImage(Image.open(
+            os.path.join(sys.path[0], "Search_Image_Dark.png")
+        ).resize((55, 55)))
+        
+        self.SEARCH_LIGHT = ImageTk.PhotoImage(Image.open(
+            os.path.join(sys.path[0], "Search_Image_Light.png")
+        ).resize((55, 55)))
 
         self.min = "хв"  # This changes according 
         self.sec = "с"   # to the chosen language.
         
-        self.title("Track Finder App")
+        self.title("Додаток Пошуку Треків")
         self.geometry(
             f"{self.WIDTH}x{self.HEIGHT}+{self.WINDOW_CENTERING_X}+{self.WINDOW_CENTERING_Y}"
         )
@@ -54,17 +65,17 @@ class Window(ctk.CTk):
         self.frame_left = ctk.CTkFrame(self, width=180, height=832, corner_radius=0)
         self.frame_left.grid(row=0, column=0, rowspan=12, sticky="nswe")
         
-        self.label_1 = ctk.CTkLabel(self.frame_left, text="Track\nFinder\nApp",
+        self.label_1 = ctk.CTkLabel(self.frame_left, text="Додаток\nПошуку\nТреків", 
                                     text_font=self.LARGE_FONT)
         self.label_1.pack(pady=60, padx=10)
         
-        self.appearance_mode = ctk.CTkOptionMenu(self.frame_left, 
-                                              values=["Light", "Dark"],
+        self.appearance_mode = ctk.CTkOptionMenu(self.frame_left, text_font="Calibri 12", 
+                                              values=["Світлий", "Темний"], 
                                               command=self.change_appearance_mode)
-        self.appearance_mode.set("Dark")
+        self.appearance_mode.set("Темний")
         self.appearance_mode.pack(pady=(0, 80), padx=20, side="bottom")
         
-        self.label_mode = ctk.CTkLabel(self.frame_left, text="Appearance Mode:", 
+        self.label_mode = ctk.CTkLabel(self.frame_left, text="Вигляд вікна:", 
                                        text_font=self.SMALL_FONT)
         self.label_mode.pack(pady=20, padx=20, side="bottom")
         # ------------------------
@@ -77,8 +88,8 @@ class Window(ctk.CTk):
         self.search_query = tk.StringVar()
         self.search_query.trace_add("write", self.fill_listbox_with_tracks)
         self.entry = ctk.CTkEntry(self, width=440, placeholder_text="Сюди", 
-                                  text_font=self.MEDIUM_FONT, 
-                                  textvariable=self.search_query)
+                                  text_font=self.MEDIUM_FONT, height=45, 
+                                  textvariable=self.search_query, corner_radius=10)
         self.entry.grid(row=1, column=1, columnspan=3, rowspan=3, 
                         pady=(0, 20), padx=20, sticky="we")
         
@@ -92,7 +103,7 @@ class Window(ctk.CTk):
                                   selectmode="browse", bd=2, activestyle="none", 
                                   highlightthickness=0, selectforeground="#ebebeb", 
                                   font=self.MEDIUM_FONT, exportselection=False, 
-                                  relief="groove", height=16, width=36)
+                                  relief="groove", height=16, width=40)
         self.listbox.grid(row=0, column=0, sticky="nswe")
         
         self.listbox_scroll_y = ctk.CTkScrollbar(self.frame_listbox, 
@@ -108,11 +119,12 @@ class Window(ctk.CTk):
                                xscrollcommand=self.listbox_scroll_x.set)
         # ------------------------
 
-        self.search_button = ctk.CTkButton(self, text="Search", 
-                                           text_font=self.MEDIUM_FONT, 
-                                           command=self.fill_listbox_with_tracks)
+        self.search_button = ctk.CTkButton(self, text="Пошук", image=self.SEARCH_LIGHT, 
+                                           text_font=self.MEDIUM_FONT, compound="left", 
+                                           command=self.fill_listbox_with_tracks, 
+                                           width=75, height=70, corner_radius=10)
         self.search_button.grid(row=1, column=4, rowspan=3, 
-                                pady=(0, 20), padx=20, sticky="we")
+                                pady=(0, 20), padx=20)
 
         # Radiobuttons
         self.search_mode = tk.StringVar(value="name")
@@ -229,17 +241,18 @@ class Window(ctk.CTk):
         """
         Change the window's theme (Dark or Light).
         """
-        if new_appearance_mode == "Dark":
+        if new_appearance_mode == "Темний":
             self.listbox["bg"] = "#1f1f1f"
             self.listbox["fg"] = "#ebebeb"
             self.listbox["selectbackground"] = "#11b384"
             self.listbox["selectforeground"] = "#ebebeb"
-        elif new_appearance_mode == "Light":
+            ctk.set_appearance_mode("Dark")
+        elif new_appearance_mode == "Світлий":
             self.listbox["bg"] = "#ebebeb"
             self.listbox["fg"] = "#1f1f1f"
             self.listbox["selectbackground"] = "#72cf9f"
             self.listbox["selectforeground"] = "#1f1f1f"
-        ctk.set_appearance_mode(new_appearance_mode)
+            ctk.set_appearance_mode("Light")
             
     def fill_listbox_with_tracks(self, *args):
         """
@@ -249,7 +262,7 @@ class Window(ctk.CTk):
         for i in self.search_tracks(self.search_query.get()):
             self.listbox.insert("end", i[0])
         if len(self.search_tracks(self.search_query.get())) == 0:
-            self.name.set("Жодного треку")
+            self.name.set("Жодного треку не обрано")
             self.author.set("Автор")
             self.genre.set("Жанр пісні")
             self.album.set("Назва альбому")
@@ -261,9 +274,11 @@ class Window(ctk.CTk):
         contains track's name by changing its last 
         characters with three dots.
         """
-        font = tkFont.Font(family='Comic Sans MS', size=24)
+        
+        font = tkFont.Font(family="Calibri", size=24, weight="bold")
         max_width = self.label_name.winfo_width()
         actual_width = font.measure(text)
+        
         if actual_width <= max_width:
             # The original text fits; no need to add ellipsis.
             self.name.set(text)
@@ -281,7 +296,7 @@ class Window(ctk.CTk):
         characters with three dots.
         """
         
-        font = tkFont.Font(family='Comic Sans MS', size=16)
+        font = tkFont.Font(family='Calibri', size=18, weight="bold")
         max_width = 376
         actual_width = font.measure(text)
         
@@ -301,8 +316,8 @@ class Window(ctk.CTk):
         contains track's album title by changing its last 
         characters with three dots.
         """
-        font = tkFont.Font(family='Comic Sans MS', size=16)
-
+        
+        font = tkFont.Font(family="Calibri", size=18, weight="bold")
         max_width = 376
         actual_width = font.measure(text)
         
