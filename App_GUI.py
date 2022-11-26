@@ -258,11 +258,11 @@ class Window(ctk.CTk):
         contains track's author(s) by changing its last 
         characters with three dots.
         """
+        
         font = tkFont.Font(family='Comic Sans MS', size=16)
-        # self.label_author.configure(corner_radius=0)
-        max_width = self.label_author.winfo_width()
+        max_width = 376
         actual_width = font.measure(text)
-        # self.label_author.configure(corner_radius=10)
+        
         if actual_width <= max_width:
             # The original text fits; no need to add ellipsis.
             self.author.set(text)
@@ -280,10 +280,10 @@ class Window(ctk.CTk):
         characters with three dots.
         """
         font = tkFont.Font(family='Comic Sans MS', size=16)
-        # self.label_album.configure(corner_radius=0)
-        max_width = self.label_album.winfo_width()
+
+        max_width = 376
         actual_width = font.measure(text)
-        # self.label_album.configure(corner_radius=10)
+        
         if actual_width <= max_width:
             # The original text fits; no need to add ellipsis.
             self.album.set(text)
@@ -293,7 +293,7 @@ class Window(ctk.CTk):
                 text = text[:-1]
                 actual_width = font.measure(text + "...")
             self.album.set(text + "...")
-            
+
     def milliseconds(self, number):
         """
         Convert milliseconds to seconds and minutes.
