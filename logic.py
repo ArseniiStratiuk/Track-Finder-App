@@ -5,15 +5,6 @@ from sql_interface import DbChinook
 class Search_engine():
     def __init__(self, db):
         self.db = db
-
-    def select_all_tracks(self):
-        """
-        Select the names of all the tracks.
-        """
-        res = self.db.select("""
-                SELECT Name FROM tracks;
-        """)
-        return res
     
     def select_data(self, track):
         """

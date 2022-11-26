@@ -43,8 +43,7 @@ class Window(ctk.CTk):
         
         self.create_widgets()
         
-        self.all_tracks = self.engine.select_all_tracks()
-        self.fill_listbox_with_all_tracks()
+        self.fill_listbox_with_tracks()
         
         self.listbox.bind("<<ListboxSelect>>", self.click_track)
 
@@ -75,8 +74,11 @@ class Window(ctk.CTk):
                                                       columnspan=3, rowspan=2, 
                                                       sticky="w", padx=20, pady=20)
         
+        self.search_query = tk.StringVar()
+        self.search_query.trace_add("write", self.fill_listbox_with_tracks)
         self.entry = ctk.CTkEntry(self, width=440, placeholder_text="Сюди", 
-                                  text_font=self.MEDIUM_FONT)
+                                  text_font=self.MEDIUM_FONT, 
+                                  textvariable=self.search_query)
         self.entry.grid(row=1, column=1, columnspan=3, rowspan=3, 
                         pady=(0, 20), padx=20, sticky="we")
         
@@ -89,7 +91,7 @@ class Window(ctk.CTk):
                                   selectbackground="#11b384", cursor="hand2", 
                                   selectmode="browse", bd=2, activestyle="none", 
                                   highlightthickness=0, selectforeground="#ebebeb", 
-                                  font=self.MEDIUM_FONT, 
+                                  font=self.MEDIUM_FONT, exportselection=False, 
                                   relief="groove", height=16, width=36)
         self.listbox.grid(row=0, column=0, sticky="nswe")
         
@@ -107,36 +109,37 @@ class Window(ctk.CTk):
         # ------------------------
 
         self.search_button = ctk.CTkButton(self, text="Search", 
-                                           text_font=self.MEDIUM_FONT,
-                                           command=self.search_track)
+                                           text_font=self.MEDIUM_FONT, 
+                                           command=self.fill_listbox_with_tracks)
         self.search_button.grid(row=1, column=4, rowspan=3, 
                                 pady=(0, 20), padx=20, sticky="we")
 
         # Radiobuttons
-        self.radio_var = tk.IntVar(value=0)
+        self.search_mode = tk.StringVar(value="name")
+        self.search_mode.trace_add("write", self.fill_listbox_with_tracks)
 
         self.label_radio_group = ctk.CTkLabel(self, text="Шукати...", 
-        text_font=self.SMALL_FONT)
+                                              text_font=self.SMALL_FONT)
         self.label_radio_group.grid(row=0, column=6, pady=20, 
                                     padx=(40, 20), sticky="w")
 
-        self.radio_button_1 = ctk.CTkRadioButton(self, variable=self.radio_var,
-                                                 value=0, text="За назвою", 
-                                                 text_font=self.SMALL_FONT)
-        self.radio_button_1.grid(row=1, column=6, pady=(0, 20), 
-                                 padx=(40, 20), sticky="w")
+        self.radio_button_name = ctk.CTkRadioButton(self, variable=self.search_mode, 
+                                                    value="name", text="За назвою", 
+                                                    text_font=self.SMALL_FONT)
+        self.radio_button_name.grid(row=1, column=6, pady=(0, 20), 
+                                    padx=(40, 20), sticky="w")
 
-        self.radio_button_2 = ctk.CTkRadioButton(self, variable=self.radio_var,
-                                                 value=1, text="За автором", 
-                                                 text_font=self.SMALL_FONT)
-        self.radio_button_2.grid(row=2, column=6, pady=(0, 20), 
-                                 padx=(40, 20), sticky="w")
+        self.radio_button_author = ctk.CTkRadioButton(self, variable=self.search_mode,
+                                                      value="author", text="За автором", 
+                                                      text_font=self.SMALL_FONT)
+        self.radio_button_author.grid(row=2, column=6, pady=(0, 20), 
+                                      padx=(40, 20), sticky="w")
 
-        self.radio_button_3 = ctk.CTkRadioButton(self, variable=self.radio_var,
-                                                 value=2, text="За жанром", 
-                                                 text_font=self.SMALL_FONT)
-        self.radio_button_3.grid(row=3, column=6, pady=(0, 20), 
-                                 padx=(40, 20), sticky="w")
+        self.radio_button_genre = ctk.CTkRadioButton(self, variable=self.search_mode,
+                                                     value="genre", text="За жанром", 
+                                                     text_font=self.SMALL_FONT)
+        self.radio_button_genre.grid(row=3, column=6, pady=(0, 20), 
+                                     padx=(40, 20), sticky="w")
         # ------------------------
 
         # Frame with labels
@@ -179,19 +182,31 @@ class Window(ctk.CTk):
                                            corner_radius=10, height=50)
         self.label_duration.pack(padx=10, pady=(40, 0))
 
-    def search_track(self):
-        """Пошук треків за назвою треку, або за автором
-        або за жанром, в залежності від обраного режиму
-        radiobutton
+    def search_tracks(self, text) -> list:
         """
-        pass
+        Search for tracks either by their name or author(s) 
+        or genre, depending on the selected mode (radiobutton).
+        """
+        if self.search_mode.get() == "name":
+            tracks = self.engine.search_by_name(text)
+            
+        elif self.search_mode.get() == "author":
+            tracks = self.engine.search_by_author(text)
+            
+        elif self.search_mode.get() == "genre":
+            tracks = self.engine.search_by_genre(text)
+        
+        return tracks
 
     def click_track(self, event):
         """
         Fill labels with information 
         about the selected (clicked) track.
         """
-        index = int(self.listbox.curselection()[0])
+        try:
+            index = int(self.listbox.curselection()[0])
+        except IndexError:
+            return
         
         track = self.listbox.get(index)
         self.fit_text_in_name_label(track)
@@ -225,13 +240,20 @@ class Window(ctk.CTk):
             self.listbox["selectbackground"] = "#72cf9f"
             self.listbox["selectforeground"] = "#1f1f1f"
         ctk.set_appearance_mode(new_appearance_mode)
-        
-    def fill_listbox_with_all_tracks(self):
+            
+    def fill_listbox_with_tracks(self, *args):
         """
-        Fill listbox with all the tracks from the database.
+        Fill listbox with tracks that match the user's search query.
         """
-        for i in self.all_tracks:
+        self.listbox.delete(0, "end")
+        for i in self.search_tracks(self.search_query.get()):
             self.listbox.insert("end", i[0])
+        if len(self.search_tracks(self.search_query.get())) == 0:
+            self.name.set("Жодного треку")
+            self.author.set("Автор")
+            self.genre.set("Жанр пісні")
+            self.album.set("Назва альбому")
+            self.duration.set("Тривалість")
             
     def fit_text_in_name_label(self, text):
         """
@@ -294,7 +316,7 @@ class Window(ctk.CTk):
                 actual_width = font.measure(text + "...")
             self.album.set(text + "...")
 
-    def milliseconds(self, number):
+    def milliseconds(self, number) -> str:
         """
         Convert milliseconds to seconds and minutes.
         """
