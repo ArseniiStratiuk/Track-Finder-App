@@ -89,7 +89,8 @@ class Window(ctk.CTk):
         self.search_query.trace_add("write", self.fill_listbox_with_tracks)
         self.entry = ctk.CTkEntry(self, width=440, placeholder_text="Сюди", 
                                   text_font=self.MEDIUM_FONT, height=45, 
-                                  textvariable=self.search_query, corner_radius=10)
+                                  textvariable=self.search_query, corner_radius=10, 
+                                  selectbackground="#11b384")
         self.entry.grid(row=1, column=1, columnspan=3, rowspan=3, 
                         pady=(0, 20), padx=20, sticky="we")
         
@@ -246,12 +247,18 @@ class Window(ctk.CTk):
             self.listbox["fg"] = "#ebebeb"
             self.listbox["selectbackground"] = "#11b384"
             self.listbox["selectforeground"] = "#ebebeb"
+            self.search_button.configure(image=self.SEARCH_LIGHT)
+            self.entry["selectbackground"] = "#11b384"
+            self.entry["selectforeground"] = "#ebebeb"
             ctk.set_appearance_mode("Dark")
         elif new_appearance_mode == "Світлий":
             self.listbox["bg"] = "#ebebeb"
             self.listbox["fg"] = "#1f1f1f"
             self.listbox["selectbackground"] = "#72cf9f"
             self.listbox["selectforeground"] = "#1f1f1f"
+            self.search_button.configure(image=self.SEARCH_DARK)
+            self.entry["selectbackground"] = "#72cf9f"
+            self.entry["selectforeground"] = "#1f1f1f"
             ctk.set_appearance_mode("Light")
             
     def fill_listbox_with_tracks(self, *args):
