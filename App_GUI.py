@@ -24,6 +24,8 @@ class Window(ctk.CTk):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        
+        self.iconbitmap(os.path.join(sys.path[0], "Icon.ico"))
 
         self.resizable(False, False)
 
@@ -33,15 +35,14 @@ class Window(ctk.CTk):
         self.WINDOW_CENTERING_X = int(self.winfo_screenwidth()/2 - self.WIDTH/2)
         self.WINDOW_CENTERING_Y = int(self.winfo_screenheight()/2 - self.HEIGHT/2)
         
-        self.SEARCH_DARK = Image.open(
-            os.path.join(sys.path[0], "Search_Image_Dark.png")
-        )
-        
-        self.SEARCH_LIGHT = Image.open(
-            os.path.join(sys.path[0], "Search_Image_Light.png")
-        )
-        
+        # Upload images that will be used in the program.
+        self.SEARCH_DARK = Image.open(os.path.join(sys.path[0], "Search_Image_Dark.png"))
+        self.SEARCH_LIGHT = Image.open(os.path.join(sys.path[0], "Search_Image_Light.png"))
         self.search_image = ctk.CTkImage(self.SEARCH_DARK, self.SEARCH_LIGHT, (55, 55))
+
+        self.ICON = Image.open(os.path.join(sys.path[0], "Icon.png"))
+        self.icon = ctk.CTkImage(self.ICON, size=(150, 150))
+        # ------------------------
 
         self.min = "хв"  # This changes according 
         self.sec = "с"   # to the chosen language.
@@ -69,8 +70,8 @@ class Window(ctk.CTk):
         self.frame_left.grid(row=0, column=0, rowspan=12, sticky="nswe")
         
         self.label_1 = ctk.CTkLabel(self.frame_left, text="Додаток\nПошуку\nТреків", 
-                                    font=self.LARGE_FONT)
-        self.label_1.pack(pady=60, padx=10)
+                                    font=self.LARGE_FONT, image=self.icon, compound="top")
+        self.label_1.pack(pady=40, padx=10)
         
         self.appearance_mode = ctk.CTkOptionMenu(self.frame_left, font=("Calibri", 16), 
                                               values=["Світлий", "Темний"], text_color=("#1f1f1f", "#ebebeb"), 
@@ -175,7 +176,7 @@ class Window(ctk.CTk):
         self.author = tk.StringVar(value="Автор")
         self.label_author = ctk.CTkLabel(self.frame_labels, textvariable=self.author, 
                                         font=self.MEDIUM_FONT, anchor="center", 
-                                        corner_radius=10, width=400, 
+                                        corner_radius=10, width=400, wraplength=380, 
                                         fg_color=("gray97", "gray28"), height=50)
         self.label_author.pack(padx=10, pady=(40, 0))
 
@@ -190,7 +191,7 @@ class Window(ctk.CTk):
         self.label_album = ctk.CTkLabel(self.frame_labels, textvariable=self.album, 
                                        font=self.MEDIUM_FONT, anchor="center", 
                                        width=400, fg_color=("gray97", "gray28"), 
-                                       corner_radius=10, height=50)
+                                       corner_radius=10, height=50, wraplength=380)
         self.label_album.pack(padx=10, pady=(40, 0))
 
         self.duration = tk.StringVar(value="Тривалість")
@@ -232,13 +233,15 @@ class Window(ctk.CTk):
         data = self.engine.select_data(track)
         
         author = data[0]
-        self.fit_text_in_author_label(author)
+        # self.fit_text_in_author_label(author)
+        self.author.set(author)
         
         genre = data[1]
         self.genre.set(genre)
         
         album = data[2]
-        self.fit_text_in_album_label(album)
+        # self.fit_text_in_album_label(album)
+        self.album.set(album)
         
         duration = data[3]
         self.duration.set(self.milliseconds(duration))
