@@ -315,6 +315,9 @@ class Window(ctk.CTk):
         self.destroy()
         
     def change_title(self, *args):
+        """
+        Change the title periodically, every 4 seconds.
+        """
         if self.title() == "Додаток Пошуку Треків":
             self.title("Зробив Стратюк Арсеній")
             self.after(4000, self.change_title)
