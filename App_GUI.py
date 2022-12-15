@@ -28,6 +28,8 @@ class Window(ctk.CTk):
         self.iconbitmap(os.path.join(sys.path[0], "Icon.ico"))
 
         self.resizable(False, False)
+        
+        self.after(4000, self.change_title)
 
         self.db = DbChinook()
         self.engine = Search_engine(self.db)
@@ -45,7 +47,7 @@ class Window(ctk.CTk):
         # ------------------------
 
         self.min = "хв"  # This changes according 
-        self.sec = "с"   # to the chosen language.
+        self.sec = "с"   # to the chosen language. (Not yet)
         
         self.title("Додаток Пошуку Треків")
         self.geometry(
@@ -233,14 +235,12 @@ class Window(ctk.CTk):
         data = self.engine.select_data(track)
         
         author = data[0]
-        # self.fit_text_in_author_label(author)
         self.author.set(author)
         
         genre = data[1]
         self.genre.set(genre)
         
         album = data[2]
-        # self.fit_text_in_album_label(album)
         self.album.set(album)
         
         duration = data[3]
@@ -301,48 +301,6 @@ class Window(ctk.CTk):
                 text = text[:-1]
                 actual_width = font.measure(text + "...")
             self.name.set(text + "...")
-            
-    def fit_text_in_author_label(self, text):
-        """
-        Fit overlong text in the label which 
-        contains track's author(s) by changing its last 
-        characters with three dots.
-        """
-        
-        font = tkFont.Font(family=self.MEDIUM_FONT[0], size=self.MEDIUM_FONT[1], weight="bold")
-        max_width = 500
-        actual_width = font.measure(text)
-        
-        if actual_width <= max_width:
-            # The original text fits; no need to add ellipsis.
-            self.author.set(text)
-        else:
-            # The original text won't fit. Keep shrinking until it does.
-            while actual_width > max_width and len(text) > 1:
-                text = text[:-1]
-                actual_width = font.measure(text + "...")
-            self.author.set(text + "...")
-            
-    def fit_text_in_album_label(self, text):
-        """
-        Fit overlong text in the label which 
-        contains track's album title by changing its last 
-        characters with three dots.
-        """
-        
-        font = tkFont.Font(family=self.MEDIUM_FONT[0], size=self.MEDIUM_FONT[1], weight="bold")
-        max_width = 500
-        actual_width = font.measure(text)
-        
-        if actual_width <= max_width:
-            # The original text fits; no need to add ellipsis.
-            self.album.set(text)
-        else:
-            # The original text won't fit. Keep shrinking until it does.
-            while actual_width > max_width and len(text) > 1:
-                text = text[:-1]
-                actual_width = font.measure(text + "...")
-            self.album.set(text + "...")
 
     def milliseconds(self, number) -> str:
         """
@@ -355,6 +313,14 @@ class Window(ctk.CTk):
 
     def on_closing(self, event=0):
         self.destroy()
+        
+    def change_title(self, *args):
+        if self.title() == "Додаток Пошуку Треків":
+            self.title("Зробив Стратюк Арсеній")
+            self.after(4000, self.change_title)
+        else:
+            self.title("Додаток Пошуку Треків")
+            self.after(4000, self.change_title)
 
 
 if __name__ == "__main__":
