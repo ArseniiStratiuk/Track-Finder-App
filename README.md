@@ -10,3 +10,11 @@ pip install customtkinter
 ```
 pip install pillow
 ```
+
+---
+
+![](GUI_Dark.png)
+| _`App_GUI.py` on Windows 10 with dark mode and standart 'green' theme_
+
+![](GUI_Light.png)
+| _`App_GUI.py` on Windows 10 with light mode and standard 'green' theme_
